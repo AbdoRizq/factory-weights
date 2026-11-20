@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>موازين الإنتاج - إدارة المصنع</title>
+  <link rel="manifest" href="./manifest.json" />
   <style>
     :root {
       --primary: #0f766e;
@@ -131,6 +132,35 @@
       transform: scale(0.95);
     }
 
+    /* Install Banner */
+    .install-banner {
+      display: none;
+      background: var(--primary-light);
+      border-bottom: 1px solid var(--primary);
+      padding: 10px 16px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .install-banner span {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .install-banner button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
     /* Tabs */
     .tabs {
       display: flex;
@@ -233,7 +263,7 @@
       border-color: var(--primary);
     }
 
-    /* Toggle Pills (Order Type & Packing Line) */
+    /* Toggle Pills */
     .radio-group {
       display: flex;
       gap: 8px;
@@ -365,7 +395,6 @@
       margin-top: 4px;
     }
 
-    /* Optional Sorting/Waste Section */
     .waste-toggle-btn {
       width: 100%;
       padding: 12px;
@@ -443,29 +472,12 @@
       gap: 8px;
     }
 
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-whatsapp { background: var(--whatsapp); color: #064e3b; }
+    .btn-secondary { background: var(--card); color: var(--text); border: 1.5px solid var(--border); }
+    .btn-danger-outline { background: transparent; border: 1.5px solid var(--danger); color: var(--danger); }
 
-    .btn-whatsapp {
-      background: var(--whatsapp);
-      color: #064e3b;
-    }
-
-    .btn-secondary {
-      background: var(--card);
-      color: var(--text);
-      border: 1.5px solid var(--border);
-    }
-
-    .btn-danger-outline {
-      background: transparent;
-      border: 1.5px solid var(--danger);
-      color: var(--danger);
-    }
-
-    /* Filter Chips in Log */
+    /* Filter Chips */
     .filter-bar {
       display: flex;
       gap: 6px;
@@ -565,9 +577,7 @@
       padding: 16px;
     }
 
-    .modal-backdrop.open {
-      display: flex;
-    }
+    .modal-backdrop.open { display: flex; }
 
     .modal {
       background: var(--card);
@@ -629,6 +639,11 @@
     <button class="icon-btn" onclick="openSettings()" title="الإعدادات والنسخ الاحتياطي">⚙️</button>
   </div>
 </header>
+
+<div class="install-banner" id="installBanner">
+  <span>📲 ثبّت التطبيق على موبايلك للعمل بدون نت</span>
+  <button onclick="triggerInstall()">تثبيت الآن</button>
+</div>
 
 <div class="tabs">
   <button class="tab-btn active" id="tabNew" onclick="switchTab('new')">➕ تقرير لوط جديد</button>
@@ -777,7 +792,6 @@
         <input type="date" id="filterDate" onchange="renderReports()" style="width:auto; padding:5px 8px; font-size:0.85rem; background:#1e293b; color:white; border-color:#334155;" />
       </div>
 
-      <!-- Line Filter Chips -->
       <div class="filter-bar" style="margin-bottom:10px;">
         <button class="chip active" id="chipAll" onclick="setLineFilter('الكل')">الكل</button>
         <button class="chip" id="chipLine1" onclick="setLineFilter('تعبئة 1')">🏭 تعبئة 1</button>
@@ -866,8 +880,30 @@
   let reports = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{"engName":"","shiftName":"الوردية الصباحية","adminPhone":""}');
   let currentLineFilter = 'الكل';
+  let deferredPrompt = null;
 
-  // --- THEME (DARK / LIGHT MODE) ---
+  // --- PWA INSTALL PROMPT ---
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBanner').style.display = 'flex';
+  });
+
+  function triggerInstall() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById('installBanner').style.display = 'none';
+    });
+  }
+
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('installBanner').style.display = 'none';
+    showToast('✅ تم تثبيت التطبيق على موبايلك بنجاح');
+  });
+
+  // --- THEME ---
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     document.getElementById('themeToggleBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
@@ -941,7 +977,7 @@
     handleDraftChange();
   }
 
-  // --- COUNT EXPRESSION PARSER (e.g. "40+30+40") ---
+  // --- COUNT EXPRESSION PARSER ---
   function parseCountExpression(exprStr) {
     if (!exprStr) return { sum: 0, parts: [], cleanExpr: '' };
     const normalized = String(exprStr)
@@ -978,7 +1014,6 @@
     const row = document.createElement('div');
     row.className = 'weight-row';
 
-    // خانة اسم المكون تظهر في الوارد لدعم الخلطات (بسلة بالجزر / خضار مشكل)
     const ingredientHtml = section === 'inbound'
       ? `<input type="text" class="ingredient-input row-ingredient" placeholder="اسم المكون (اختياري للخلطات: بسلة، جزر...)" value="${data.ingredient || ''}" oninput="handleDraftChange()" />`
       : '';
@@ -1025,7 +1060,6 @@
       const parsed = parseCountExpression(rawExpr);
       const weightInput = row.querySelector('.row-weight');
 
-      // لو اختار "كجم صافي" نخلي وزن الواحدة 1 تلقائي لو فاضي
       let unitWeight = parseFloat(weightInput.value) || 0;
       if (pkg === 'كجم صافي' && !weightInput.value && parsed.sum > 0) {
         unitWeight = 1;
@@ -1083,7 +1117,6 @@
     document.getElementById('calcOut').textContent = `${outData.total.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
     document.getElementById('calcWaste').textContent = `${wasteData.total.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
 
-    // العجز الصافي غير المبرر = الوارد - (الصادر السليم + الفرزة الموزونة)
     const netDiff = inData.total - (outData.total + wasteData.total);
     const diffEl = document.getElementById('calcDiff');
     const diffLabel = document.getElementById('diffLabel');
@@ -1110,7 +1143,7 @@
   // --- AUTO-SAVE DRAFT ---
   let draftTimeout;
   function handleDraftChange() {
-    if (document.getElementById('editingId').value) return; // لا تحفظ مسودة أثناء تعديل تقرير محفوظ
+    if (document.getElementById('editingId').value) return;
     clearTimeout(draftTimeout);
     draftTimeout = setTimeout(() => {
       const draft = {
@@ -1594,19 +1627,11 @@
     cList.innerHTML = uniqueClients.map(c => `<option value="${c}">`).join('');
   }
 
-  // --- OFFLINE SERVICE WORKER REGISTRATION (INLINE BLOB) ---
-  if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-    const swCode = `
-      const CACHE_NAME = 'factory-weights-cache-v1';
-      self.addEventListener('install', e => {
-        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll([self.location.href])));
-      });
-      self.addEventListener('fetch', e => {
-        e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
-      });
-    `;
-    const blob = new Blob([swCode], { type: 'application/javascript' });
-    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+  // --- REAL SERVICE WORKER REGISTRATION ---
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
   }
 
   // --- INIT ---
@@ -1617,7 +1642,6 @@
   updateDatalists();
   loadDraft();
 
-  // لو المهندس لسه مسجلش اسمه أول مرة، نفتحله نافذة التعريف تلقائيًا
   if (!settings.engName) {
     setTimeout(openSettings, 400);
   }
