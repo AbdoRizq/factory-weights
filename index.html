@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f766e" id="metaThemeColor" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>موازين الإنتاج - إدارة المصنع</title>
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --primary-light: #ccfbf1;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --card-sub: #f8fafc;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --input-bg: #ffffff;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --whatsapp: #25d366;
+      --summary-bg: #0f172a;
+      --shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+    }
+
+    [data-theme="dark"] {
+      --primary: #14b8a6;
+      --primary-dark: #2dd4bf;
+      --primary-light: rgba(20, 184, 166, 0.18);
+      --bg: #0b1120;
+      --card: #1e293b;
+      --card-sub: #0f172a;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --input-bg: #0f172a;
+      --danger: #f87171;
+      --danger-bg: rgba(239, 68, 68, 0.18);
+      --success: #4ade80;
+      --success-bg: rgba(34, 197, 94, 0.18);
+      --warning: #fbbf24;
+      --warning-bg: rgba(245, 158, 11, 0.18);
+      --summary-bg: #020617;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Tahoma, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: 90px;
+      line-height: 1.5;
+      transition: background-color 0.25s, color 0.25s;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #0f766e, #115e59);
+      color: white;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    [data-theme="dark"] header {
+      background: linear-gradient(135deg, #0f172a, #134e4a);
+      border-bottom: 1px solid #334155;
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .eng-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.16);
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 0.76rem;
+      margin-top: 3px;
+      cursor: pointer;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      background: rgba(255,255,255,0.18);
+      border: none;
+      color: white;
+      padding: 8px 10px;
+      border-radius: 9px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 64px;
+      z-index: 40;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: none;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .container {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    /* Cards & Forms */
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--primary-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.83rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 0.94rem;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    /* Toggle Pills (Order Type & Packing Line) */
+    .radio-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .radio-option {
+      flex: 1;
+      text-align: center;
+      padding: 9px 6px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+      background: var(--card-sub);
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+
+    .radio-option.selected {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    /* Weight Rows */
+    .weight-row {
+      background: var(--card-sub);
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+
+    .ingredient-input {
+      margin-bottom: 7px;
+      padding: 7px 10px !important;
+      font-size: 0.85rem !important;
+      border-style: dashed !important;
+    }
+
+    .weight-row-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.45fr 0.9fr auto;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .weight-row-grid input, .weight-row-grid select {
+      padding: 8px 6px;
+      font-size: 0.88rem;
+    }
+
+    .count-input-wrap {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .count-input-wrap input {
+      padding-left: 30px;
+      direction: ltr;
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .btn-plus-sign {
+      position: absolute;
+      left: 4px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      width: 24px;
+      height: 26px;
+      font-weight: 900;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-plus-sign:active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .row-subtotal {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 6px;
+      margin-top: 6px;
+      border-top: 1px dashed var(--border);
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .row-breakdown {
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    .btn-remove {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: none;
+      width: 30px;
+      height: 36px;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .btn-add-row {
+      width: 100%;
+      padding: 9px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1.5px dashed var(--primary);
+      border-radius: 9px;
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    /* Optional Sorting/Waste Section */
+    .waste-toggle-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--card);
+      border: 1.5px dashed var(--warning);
+      color: var(--warning);
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Live Summary Box */
+    .summary-box {
+      background: var(--summary-bg);
+      color: white;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid #1e293b;
+    }
+
+    .summary-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 520px) {
+      .summary-grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .stat-item {
+      background: rgba(255,255,255,0.07);
+      padding: 10px 6px;
+      border-radius: 9px;
+    }
+
+    .stat-label {
+      font-size: 0.74rem;
+      color: #94a3b8;
+    }
+
+    .stat-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .badge-deficit { color: #fca5a5; }
+    .badge-surplus { color: #86efac; }
+    .badge-waste { color: #fcd34d; }
+
+    /* Action Buttons */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-whatsapp {
+      background: var(--whatsapp);
+      color: #064e3b;
+    }
+
+    .btn-secondary {
+      background: var(--card);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-danger-outline {
+      background: transparent;
+      border: 1.5px solid var(--danger);
+      color: var(--danger);
+    }
+
+    /* Filter Chips in Log */
+    .filter-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+    }
+
+    .chip {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Saved Reports List */
+    .report-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      border-right: 5px solid var(--primary);
+      box-shadow: var(--shadow);
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-left: 4px;
+    }
+
+    .tag-export { background: #dbeafe; color: #1e40af; }
+    .tag-local { background: #fef3c7; color: #92400e; }
+    .tag-line { background: var(--primary-light); color: var(--primary-dark); }
+
+    .report-details {
+      font-size: 0.84rem;
+      color: var(--text);
+      margin-bottom: 10px;
+      background: var(--card-sub);
+      padding: 9px 11px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+    }
+
+    .report-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .report-actions button {
+      flex: 1;
+      padding: 8px;
+      font-size: 0.82rem;
+      border-radius: 7px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card);
+      color: var(--text);
+      width: 100%;
+      max-width: 440px;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      z-index: 200;
+      display: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      white-space: nowrap;
+    }
+
+    .hint-bar {
+      font-size: 0.76rem;
+      color: var(--primary-dark);
+      background: var(--primary-light);
+      padding: 6px 10px;
+      border-radius: 7px;
+      margin-bottom: 10px;
+    }
+
+    .draft-indicator {
+      font-size: 0.72rem;
+      color: var(--success);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>⚖️ موازين الإنتاج</h1>
+    <div class="eng-pill" onclick="openSettings()">
+      <span>👷‍♂️</span>
+      <span id="headerSubtitle">اضغط لتسجيل اسم المهندس</span>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" id="themeToggleBtn" onclick="toggleTheme()" title="الوضع الليلي / النهاري">🌙</button>
+    <button class="icon-btn" onclick="openSettings()" title="الإعدادات والنسخ الاحتياطي">⚙️</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" id="tabNew" onclick="switchTab('new')">➕ تقرير لوط جديد</button>
+  <button class="tab-btn" id="tabLog" onclick="switchTab('log')">📋 سجل اليوم (<span id="reportsCount">0</span>)</button>
+</div>
+
+<div class="container">
+  <!-- VIEW 1: NEW / EDIT REPORT -->
+  <div id="viewNew" class="view active">
+    <input type="hidden" id="editingId" value="" />
+
+    <div class="card">
+      <div class="card-title">
+        <span>1. بيانات اللوط والمنتج</span>
+        <div>
+          <span id="draftSavedBadge" class="draft-indicator" style="display:none;">● مسودة محفوظة</span>
+          <span id="editBadge" style="display:none; font-size:0.74rem; background:var(--warning-bg); color:var(--warning); padding:2px 8px; border-radius:6px;">وضع التعديل</span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>اسم المنتج (أو الخلطة) *</label>
+          <input type="text" id="productName" list="productsList" placeholder="مثال: بسلة، بسلة بالجزر، خضار مشكل..." oninput="handleDraftChange()" />
+          <datalist id="productsList">
+            <option value="بسلة خضراء">
+            <option value="بسلة بالجزر">
+            <option value="خضار مشكل">
+            <option value="فراولة مجمدة">
+            <option value="فاصوليا خضراء">
+            <option value="خرشوف">
+            <option value="بطاطس نصف مقلية">
+            <option value="بامية">
+          </datalist>
+        </div>
+
+        <div class="form-group">
+          <label>رقم الباتش (Batch No) *</label>
+          <input type="text" id="batchNumber" placeholder="مثال: B-204" oninput="handleDraftChange()" />
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>صالة / خط التعبئة</label>
+          <div class="radio-group">
+            <div class="radio-option selected" id="optLine1" onclick="setPackingLine('تعبئة 1')">🏭 تعبئة 1</div>
+            <div class="radio-option" id="optLine2" onclick="setPackingLine('تعبئة 2')">🏭 تعبئة 2</div>
+          </div>
+          <input type="hidden" id="packingLine" value="تعبئة 1" />
+        </div>
+
+        <div class="form-group">
+          <label>نوع الطلبية</label>
+          <div class="radio-group">
+            <div class="radio-option selected" id="optExport" onclick="setOrderType('تصدير')">🚢 تصدير</div>
+            <div class="radio-option" id="optLocal" onclick="setOrderType('محلي')">🏠 محلي</div>
+          </div>
+          <input type="hidden" id="orderType" value="تصدير" />
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:0;">
+        <label>اسم العميل / الجهة</label>
+        <input type="text" id="clientName" list="clientsList" placeholder="اسم العميل (اختياري)" oninput="handleDraftChange()" />
+        <datalist id="clientsList"></datalist>
+      </div>
+    </div>
+
+    <!-- INBOUND SECTION -->
+    <div class="card">
+      <div class="card-title">
+        <span>2. أوزان الوارد (سحب التلاجة)</span>
+        <span style="font-size:0.86rem; color:var(--primary);" id="totalInBadge">0 كجم</span>
+      </div>
+      <div class="hint-bar">💡 اجمع السحبات بـ <strong>+</strong> (مثال: <code>40+30+40</code>). ولو خلطة (خضار مشكل) اكتب اسم المكون في الخانة العلوية.</div>
+      <div id="inboundRows"></div>
+      <button type="button" class="btn-add-row" onclick="addWeightRow('inbound')">+ إضافة مكون / عبوة وارد أخرى</button>
+    </div>
+
+    <!-- OUTBOUND SECTION -->
+    <div class="card">
+      <div class="card-title">
+        <span>3. أوزان الصادر السليم (الطبالي)</span>
+        <span style="font-size:0.86rem; color:var(--primary);" id="totalOutBadge">0 كجم</span>
+      </div>
+      <div class="hint-bar">💡 سجل كل طبلية بعلامة <strong>+</strong> (مثال: <code>100+100+54+100</code>) عشان يبان لو فيه طبلية ناقصة.</div>
+      <div id="outboundRows"></div>
+      <button type="button" class="btn-add-row" onclick="addWeightRow('outbound')">+ إضافة عبوة / وزن صادر آخر</button>
+    </div>
+
+    <!-- OPTIONAL WASTE / SORTING SECTION -->
+    <button type="button" class="waste-toggle-btn" id="wasteToggleBtn" onclick="toggleWasteSection()">
+      🗑️ + إضافة أوزان الفرزة والتوالف (اختياري)
+    </button>
+
+    <div class="card" id="wasteCard" style="display:none; border-color:var(--warning);">
+      <div class="card-title" style="color:var(--warning);">
+        <span>4. أوزان الفرزة والتوالف الفعلية</span>
+        <span style="font-size:0.86rem;" id="totalWasteBadge">0 كجم</span>
+      </div>
+      <div id="wasteRows"></div>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn-add-row" style="border-color:var(--warning); color:var(--warning); background:var(--warning-bg);" onclick="addWeightRow('waste')">+ إضافة وزن فرزة آخر</button>
+        <button type="button" class="btn-add-row" style="width:auto; padding:0 12px; border-color:var(--danger); color:var(--danger); background:var(--danger-bg);" onclick="hideAndClearWaste()">إلغاء الفرزة</button>
+      </div>
+    </div>
+
+    <!-- LIVE CALCULATION SUMMARY -->
+    <div class="summary-box">
+      <div style="font-size:0.82rem; color:#cbd5e1; display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;">
+        <span>ملخص حساب اللوط الحالي</span>
+        <span id="lossPercentDisplay">العجز الصافي: 0% | الفرزة: 0%</span>
+      </div>
+      <div class="summary-grid-4">
+        <div class="stat-item">
+          <div class="stat-label">إجمالي الوارد</div>
+          <div class="stat-value" id="calcIn">0 كجم</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">الصادر السليم</div>
+          <div class="stat-value" id="calcOut">0 كجم</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">الفرزة الموزونة</div>
+          <div class="stat-value badge-waste" id="calcWaste">0 كجم</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label" id="diffLabel">العجز الصافي</div>
+          <div class="stat-value" id="calcDiff">0 كجم</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button type="button" class="btn btn-primary" onclick="saveReport()">💾 حفظ التقرير في السجل</button>
+      <button type="button" class="btn btn-secondary" style="width:auto; padding:0 16px;" onclick="confirmResetForm()" title="تفريغ الحقول">🔄</button>
+    </div>
+  </div>
+
+  <!-- VIEW 2: DAILY LOG & EXPORT -->
+  <div id="viewLog" class="view">
+    <div class="card" style="background:var(--summary-bg); color:white;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:800;">📊 إحصائيات الإنتاج</span>
+        <input type="date" id="filterDate" onchange="renderReports()" style="width:auto; padding:5px 8px; font-size:0.85rem; background:#1e293b; color:white; border-color:#334155;" />
+      </div>
+
+      <!-- Line Filter Chips -->
+      <div class="filter-bar" style="margin-bottom:10px;">
+        <button class="chip active" id="chipAll" onclick="setLineFilter('الكل')">الكل</button>
+        <button class="chip" id="chipLine1" onclick="setLineFilter('تعبئة 1')">🏭 تعبئة 1</button>
+        <button class="chip" id="chipLine2" onclick="setLineFilter('تعبئة 2')">🏭 تعبئة 2</button>
+      </div>
+
+      <div class="summary-grid-4">
+        <div class="stat-item">
+          <div class="stat-label">الوارد</div>
+          <div class="stat-value" id="dayTotalIn">0 كجم</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">الصادر السليم</div>
+          <div class="stat-value" id="dayTotalOut">0 كجم</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">الفرزة</div>
+          <div class="stat-value badge-waste" id="dayTotalWaste">0 كجم</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">العجز الصافي</div>
+          <div class="stat-value" id="dayTotalDiff">0 كجم</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
+      <button class="btn btn-whatsapp" onclick="shareWhatsApp()">📲 إرسال واتساب للإدارة</button>
+      <button class="btn btn-secondary" onclick="exportCSV()">📥 تصدير Excel (CSV)</button>
+    </div>
+
+    <div id="reportsList"></div>
+
+    <button class="btn btn-danger-outline" style="margin-top:20px;" onclick="clearDayReports()">🗑️ مسح تقارير هذا اليوم</button>
+  </div>
+</div>
+
+<!-- SETTINGS & BACKUP MODAL -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal">
+    <h3 style="margin-bottom:6px; color:var(--primary-dark);">👷‍♂️ بيانات المهندس والإدارة</h3>
+    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">يتم ختم جميع التقارير باسمك وورديتك تلقائيًا.</p>
+
+    <div class="form-group">
+      <label>اسم المهندس المسؤول *</label>
+      <input type="text" id="engName" placeholder="مثال: م. عبده رزق" />
+    </div>
+    <div class="form-group">
+      <label>الوردية</label>
+      <select id="shiftName">
+        <option value="الوردية الصباحية">الوردية الصباحية</option>
+        <option value="الوردية المسائية">الوردية المسائية</option>
+        <option value="الوردية الليلية">الوردية الليلية</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>رقم واتساب الإدارة (اختياري - بكود الدولة)</label>
+      <input type="tel" id="adminPhone" placeholder="مثال: 201012345678" />
+    </div>
+
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button class="btn btn-primary" onclick="saveSettings()">💾 حفظ البيانات</button>
+      <button class="btn btn-secondary" onclick="closeSettings()">إغلاق</button>
+    </div>
+
+    <hr style="margin:18px 0; border:none; border-top:1px solid var(--border);" />
+
+    <h4 style="font-size:0.9rem; margin-bottom:8px;">🛡️ النسخ الاحتياطي ونقل البيانات</h4>
+    <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">احفظ نسخة من كل تقاريرك على الموبايل أو استرجعها في أي وقت.</p>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+      <button type="button" class="btn btn-secondary" style="font-size:0.82rem; padding:10px;" onclick="downloadBackup()">⬇️ حفظ نسخة (Backup)</button>
+      <button type="button" class="btn btn-secondary" style="font-size:0.82rem; padding:10px;" onclick="document.getElementById('backupFileInput').click()">⬆️ استرجاع نسخة</button>
+      <input type="file" id="backupFileInput" accept=".json" style="display:none;" onchange="restoreBackup(event)" />
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const STORAGE_KEY = 'factory_weight_reports_v3';
+  const SETTINGS_KEY = 'factory_weight_settings_v3';
+  const DRAFT_KEY = 'factory_weight_draft_v3';
+  const THEME_KEY = 'factory_weight_theme_v1';
+
+  let reports = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{"engName":"","shiftName":"الوردية الصباحية","adminPhone":""}');
+  let currentLineFilter = 'الكل';
+
+  // --- THEME (DARK / LIGHT MODE) ---
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('themeToggleBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('metaThemeColor').setAttribute('content', theme === 'dark' ? '#0f172a' : '#0f766e');
+    localStorage.setItem(THEME_KEY, theme);
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  // --- HELPERS ---
+  function getTodayISO() {
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    return new Date(now - offset).toISOString().split('T')[0];
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 2600);
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tabNew').classList.toggle('active', tab === 'new');
+    document.getElementById('tabLog').classList.toggle('active', tab === 'log');
+    document.getElementById('viewNew').classList.toggle('active', tab === 'new');
+    document.getElementById('viewLog').classList.toggle('active', tab === 'log');
+    if (tab === 'log') renderReports();
+  }
+
+  function setOrderType(type) {
+    document.getElementById('orderType').value = type;
+    document.getElementById('optExport').classList.toggle('selected', type === 'تصدير');
+    document.getElementById('optLocal').classList.toggle('selected', type === 'محلي');
+    handleDraftChange();
+  }
+
+  function setPackingLine(line) {
+    document.getElementById('packingLine').value = line;
+    document.getElementById('optLine1').classList.toggle('selected', line === 'تعبئة 1');
+    document.getElementById('optLine2').classList.toggle('selected', line === 'تعبئة 2');
+    handleDraftChange();
+  }
+
+  // --- OPTIONAL WASTE SECTION ---
+  function toggleWasteSection(forceOpen = null) {
+    const card = document.getElementById('wasteCard');
+    const btn = document.getElementById('wasteToggleBtn');
+    const shouldOpen = forceOpen !== null ? forceOpen : (card.style.display === 'none');
+
+    if (shouldOpen) {
+      card.style.display = 'block';
+      btn.style.display = 'none';
+      if (document.getElementById('wasteRows').children.length === 0) {
+        addWeightRow('waste');
+      }
+    } else {
+      card.style.display = 'none';
+      btn.style.display = 'flex';
+    }
+    calculateLive();
+  }
+
+  function hideAndClearWaste() {
+    document.getElementById('wasteRows').innerHTML = '';
+    toggleWasteSection(false);
+    handleDraftChange();
+  }
+
+  // --- COUNT EXPRESSION PARSER (e.g. "40+30+40") ---
+  function parseCountExpression(exprStr) {
+    if (!exprStr) return { sum: 0, parts: [], cleanExpr: '' };
+    const normalized = String(exprStr)
+      .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+      .replace(/[^0-9.+]/g, '');
+
+    const parts = normalized
+      .split('+')
+      .map(s => parseFloat(s))
+      .filter(n => !isNaN(n) && n > 0);
+
+    const sum = parts.reduce((acc, val) => acc + val, 0);
+    const cleanExpr = parts.join('+');
+    return { sum, parts, cleanExpr };
+  }
+
+  function appendPlus(btn) {
+    const input = btn.parentElement.querySelector('.row-count');
+    const val = input.value.trim();
+    if (val && !val.endsWith('+')) {
+      input.value = val + '+';
+    }
+    input.focus();
+    calculateLive();
+  }
+
+  // --- DYNAMIC WEIGHT ROWS ---
+  function addWeightRow(section, data = { ingredient: '', pkg: 'كرتونة', countExpr: '', unitWeight: '' }) {
+    const containerId = section === 'inbound' ? 'inboundRows' : (section === 'outbound' ? 'outboundRows' : 'wasteRows');
+    const container = document.getElementById(containerId);
+    const initialCountVal = data.countExpr !== undefined ? data.countExpr : (data.count || '');
+    const defaultPkg = data.pkg || (section === 'waste' ? 'برنيكة' : 'كرتونة');
+
+    const row = document.createElement('div');
+    row.className = 'weight-row';
+
+    // خانة اسم المكون تظهر في الوارد لدعم الخلطات (بسلة بالجزر / خضار مشكل)
+    const ingredientHtml = section === 'inbound'
+      ? `<input type="text" class="ingredient-input row-ingredient" placeholder="اسم المكون (اختياري للخلطات: بسلة، جزر...)" value="${data.ingredient || ''}" oninput="handleDraftChange()" />`
+      : '';
+
+    row.innerHTML = `
+      ${ingredientHtml}
+      <div class="weight-row-grid">
+        <select class="row-pkg" onchange="calculateLive(); handleDraftChange();">
+          <option value="كرتونة" ${defaultPkg === 'كرتونة' ? 'selected' : ''}>كرتونة</option>
+          <option value="شكارة" ${defaultPkg === 'شكارة' ? 'selected' : ''}>شكارة</option>
+          <option value="كيس" ${defaultPkg === 'كيس' ? 'selected' : ''}>كيس</option>
+          <option value="برنيكة" ${defaultPkg === 'برنيكة' ? 'selected' : ''}>برنيكة</option>
+          <option value="بالتة" ${defaultPkg === 'بالتة' ? 'selected' : ''}>بالتة</option>
+          <option value="كجم صافي" ${defaultPkg === 'كجم صافي' ? 'selected' : ''}>كجم صافي</option>
+        </select>
+        <div class="count-input-wrap">
+          <input type="text" inputmode="decimal" class="row-count" placeholder="مثال: 40+30" value="${initialCountVal}" oninput="calculateLive(); handleDraftChange();" />
+          <button type="button" class="btn-plus-sign" onclick="appendPlus(this)" title="إضافة دفعة جديدة">+</button>
+        </div>
+        <input type="number" step="any" min="0" class="row-weight" placeholder="وزن الواحدة" value="${data.unitWeight !== undefined ? data.unitWeight : ''}" oninput="calculateLive(); handleDraftChange();" />
+        <button type="button" class="btn-remove" onclick="this.closest('.weight-row').remove(); calculateLive(); handleDraftChange();">✕</button>
+      </div>
+      <div class="row-subtotal">
+        <span class="row-breakdown">العدد: 0</span>
+        <strong class="row-total-text">0 كجم</strong>
+      </div>
+    `;
+    container.appendChild(row);
+    calculateLive();
+  }
+
+  function getRowsData(section) {
+    const containerId = section === 'inbound' ? 'inboundRows' : (section === 'outbound' ? 'outboundRows' : 'wasteRows');
+    const container = document.getElementById(containerId);
+    const rows = container.querySelectorAll('.weight-row');
+    let total = 0;
+    const items = [];
+
+    rows.forEach(row => {
+      const ingEl = row.querySelector('.row-ingredient');
+      const ingredient = ingEl ? ingEl.value.trim() : '';
+      const pkg = row.querySelector('.row-pkg').value;
+      const rawExpr = row.querySelector('.row-count').value;
+      const parsed = parseCountExpression(rawExpr);
+      const weightInput = row.querySelector('.row-weight');
+
+      // لو اختار "كجم صافي" نخلي وزن الواحدة 1 تلقائي لو فاضي
+      let unitWeight = parseFloat(weightInput.value) || 0;
+      if (pkg === 'كجم صافي' && !weightInput.value && parsed.sum > 0) {
+        unitWeight = 1;
+      }
+
+      const sub = parsed.sum * unitWeight;
+
+      const breakdownEl = row.querySelector('.row-breakdown');
+      const ingPrefix = ingredient ? `[${ingredient}] ` : '';
+      if (parsed.parts.length > 1) {
+        breakdownEl.textContent = `${ingPrefix}إجمالي: ${parsed.sum} ${pkg} (${parsed.cleanExpr})`;
+      } else {
+        breakdownEl.textContent = `${ingPrefix}العدد: ${parsed.sum} ${pkg}`;
+      }
+
+      row.querySelector('.row-total-text').textContent = `${sub.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
+      total += sub;
+
+      if (parsed.sum > 0 || unitWeight > 0 || ingredient) {
+        items.push({
+          ingredient,
+          pkg,
+          count: parsed.sum,
+          countExpr: parsed.cleanExpr,
+          partsCount: parsed.parts.length,
+          unitWeight,
+          subtotal: sub
+        });
+      }
+    });
+
+    return { total, items };
+  }
+
+  function formatItemBasis(item, totalSectionWeight = 0) {
+    const batchesNote = item.partsCount > 1 ? ` (${item.countExpr})` : '';
+    const ingNote = item.ingredient ? ` [${item.ingredient}]` : '';
+    const pctNote = (item.ingredient && totalSectionWeight > 0)
+      ? ` (${((item.subtotal / totalSectionWeight) * 100).toFixed(1)}%)`
+      : '';
+    return `${item.count} ${item.pkg}${ingNote}${batchesNote} × ${item.unitWeight} كجم = ${item.subtotal} كجم${pctNote}`;
+  }
+
+  // --- LIVE CALCULATION ---
+  function calculateLive() {
+    const inData = getRowsData('inbound');
+    const outData = getRowsData('outbound');
+    const wasteData = getRowsData('waste');
+
+    document.getElementById('totalInBadge').textContent = `${inData.total.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
+    document.getElementById('totalOutBadge').textContent = `${outData.total.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
+    document.getElementById('totalWasteBadge').textContent = `${wasteData.total.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
+
+    document.getElementById('calcIn').textContent = `${inData.total.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
+    document.getElementById('calcOut').textContent = `${outData.total.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
+    document.getElementById('calcWaste').textContent = `${wasteData.total.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
+
+    // العجز الصافي غير المبرر = الوارد - (الصادر السليم + الفرزة الموزونة)
+    const netDiff = inData.total - (outData.total + wasteData.total);
+    const diffEl = document.getElementById('calcDiff');
+    const diffLabel = document.getElementById('diffLabel');
+
+    if (netDiff > 0) {
+      diffLabel.textContent = 'العجز الصافي';
+      diffEl.textContent = `${netDiff.toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
+      diffEl.className = 'stat-value badge-deficit';
+    } else if (netDiff < 0) {
+      diffLabel.textContent = 'فائض وزن';
+      diffEl.textContent = `+${Math.abs(netDiff).toLocaleString('en-US', {maximumFractionDigits: 2})} كجم`;
+      diffEl.className = 'stat-value badge-surplus';
+    } else {
+      diffLabel.textContent = 'العجز الصافي';
+      diffEl.textContent = '0 كجم';
+      diffEl.className = 'stat-value';
+    }
+
+    const netLossPct = inData.total > 0 ? ((netDiff / inData.total) * 100) : 0;
+    const wastePct = inData.total > 0 ? ((wasteData.total / inData.total) * 100) : 0;
+    document.getElementById('lossPercentDisplay').textContent = `العجز الصافي: ${netLossPct.toFixed(2)}% | الفرزة: ${wastePct.toFixed(2)}%`;
+  }
+
+  // --- AUTO-SAVE DRAFT ---
+  let draftTimeout;
+  function handleDraftChange() {
+    if (document.getElementById('editingId').value) return; // لا تحفظ مسودة أثناء تعديل تقرير محفوظ
+    clearTimeout(draftTimeout);
+    draftTimeout = setTimeout(() => {
+      const draft = {
+        productName: document.getElementById('productName').value,
+        batchNumber: document.getElementById('batchNumber').value,
+        packingLine: document.getElementById('packingLine').value,
+        orderType: document.getElementById('orderType').value,
+        clientName: document.getElementById('clientName').value,
+        inbound: getRowsData('inbound').items,
+        outbound: getRowsData('outbound').items,
+        wasteOpen: document.getElementById('wasteCard').style.display !== 'none',
+        waste: getRowsData('waste').items
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      const badge = document.getElementById('draftSavedBadge');
+      badge.style.display = 'inline';
+      setTimeout(() => { badge.style.display = 'none'; }, 1500);
+    }, 300);
+  }
+
+  function loadDraft() {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) {
+      addWeightRow('inbound');
+      addWeightRow('outbound');
+      return;
+    }
+    try {
+      const d = JSON.parse(raw);
+      document.getElementById('productName').value = d.productName || '';
+      document.getElementById('batchNumber').value = d.batchNumber || '';
+      document.getElementById('clientName').value = d.clientName || '';
+      setPackingLine(d.packingLine || 'تعبئة 1');
+      setOrderType(d.orderType || 'تصدير');
+
+      document.getElementById('inboundRows').innerHTML = '';
+      (d.inbound && d.inbound.length ? d.inbound : [{}]).forEach(i => addWeightRow('inbound', i));
+
+      document.getElementById('outboundRows').innerHTML = '';
+      (d.outbound && d.outbound.length ? d.outbound : [{}]).forEach(o => addWeightRow('outbound', o));
+
+      if (d.wasteOpen && d.waste && d.waste.length) {
+        toggleWasteSection(true);
+        document.getElementById('wasteRows').innerHTML = '';
+        d.waste.forEach(w => addWeightRow('waste', w));
+      }
+      calculateLive();
+    } catch (e) {
+      addWeightRow('inbound');
+      addWeightRow('outbound');
+    }
+  }
+
+  // --- SAVE / EDIT / DELETE REPORTS ---
+  function saveReport() {
+    const productName = document.getElementById('productName').value.trim();
+    const batchNumber = document.getElementById('batchNumber').value.trim();
+    const packingLine = document.getElementById('packingLine').value;
+    const orderType = document.getElementById('orderType').value;
+    const clientName = document.getElementById('clientName').value.trim();
+    const editingId = document.getElementById('editingId').value;
+
+    if (!productName) {
+      showToast('⚠️ من فضلك اكتب اسم المنتج أولاً');
+      return;
+    }
+
+    const inData = getRowsData('inbound');
+    const outData = getRowsData('outbound');
+    const wasteData = getRowsData('waste');
+
+    if (inData.total === 0 && outData.total === 0) {
+      showToast('⚠️ أدخل أوزان الوارد أو الصادر أولاً');
+      return;
+    }
+
+    const netDiff = inData.total - (outData.total + wasteData.total);
+    const netLossPct = inData.total > 0 ? ((netDiff / inData.total) * 100) : 0;
+    const wastePct = inData.total > 0 ? ((wasteData.total / inData.total) * 100) : 0;
+
+    const existing = editingId ? reports.find(r => r.id === Number(editingId)) : null;
+
+    const reportObj = {
+      id: editingId ? Number(editingId) : Date.now(),
+      date: existing ? existing.date : getTodayISO(),
+      time: existing ? existing.time : new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+      productName,
+      batchNumber: batchNumber || 'بدون باتش',
+      packingLine,
+      orderType,
+      clientName: clientName || 'غير محدد',
+      inbound: inData.items,
+      outbound: outData.items,
+      waste: wasteData.items,
+      totalIn: inData.total,
+      totalOut: outData.total,
+      totalWaste: wasteData.total,
+      diff: netDiff,
+      lossPercent: netLossPct,
+      wastePercent: wastePct,
+      engineer: settings.engName || 'غير مسجل',
+      shift: settings.shiftName || ''
+    };
+
+    if (editingId) {
+      const idx = reports.findIndex(r => r.id === Number(editingId));
+      if (idx !== -1) reports[idx] = reportObj;
+      showToast('✅ تم تحديث التقرير بنجاح');
+    } else {
+      reports.unshift(reportObj);
+      localStorage.removeItem(DRAFT_KEY);
+      showToast('✅ تم حفظ التقرير في سجل اليوم');
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+    updateDatalists();
+    resetForm();
+    updateCountBadge();
+  }
+
+  function confirmResetForm() {
+    if (confirm('هل تريد تفريغ الحقول الحالية لبدء تقرير جديد؟')) {
+      localStorage.removeItem(DRAFT_KEY);
+      resetForm();
+    }
+  }
+
+  function resetForm() {
+    document.getElementById('editingId').value = '';
+    document.getElementById('editBadge').style.display = 'none';
+    document.getElementById('productName').value = '';
+    document.getElementById('batchNumber').value = '';
+    document.getElementById('clientName').value = '';
+    setPackingLine('تعبئة 1');
+    setOrderType('تصدير');
+
+    document.getElementById('inboundRows').innerHTML = '';
+    document.getElementById('outboundRows').innerHTML = '';
+    document.getElementById('wasteRows').innerHTML = '';
+    toggleWasteSection(false);
+
+    addWeightRow('inbound');
+    addWeightRow('outbound');
+    calculateLive();
+  }
+
+  function editReport(id) {
+    const r = reports.find(item => item.id === id);
+    if (!r) return;
+
+    switchTab('new');
+    document.getElementById('editingId').value = r.id;
+    document.getElementById('editBadge').style.display = 'inline-block';
+    document.getElementById('productName').value = r.productName;
+    document.getElementById('batchNumber').value = r.batchNumber === 'بدون باتش' ? '' : r.batchNumber;
+    document.getElementById('clientName').value = r.clientName === 'غير محدد' ? '' : r.clientName;
+    setPackingLine(r.packingLine || 'تعبئة 1');
+    setOrderType(r.orderType);
+
+    document.getElementById('inboundRows').innerHTML = '';
+    (r.inbound.length ? r.inbound : [{}]).forEach(item => addWeightRow('inbound', item));
+
+    document.getElementById('outboundRows').innerHTML = '';
+    (r.outbound.length ? r.outbound : [{}]).forEach(item => addWeightRow('outbound', item));
+
+    document.getElementById('wasteRows').innerHTML = '';
+    if (r.waste && r.waste.length) {
+      toggleWasteSection(true);
+      r.waste.forEach(item => addWeightRow('waste', item));
+    } else {
+      toggleWasteSection(false);
+    }
+
+    calculateLive();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function deleteReport(id) {
+    if (!confirm('هل أنت متأكد من حذف هذا التقرير؟')) return;
+    reports = reports.filter(r => r.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+    renderReports();
+    updateCountBadge();
+    showToast('🗑️ تم حذف التقرير');
+  }
+
+  // --- LOG VIEW & LINE FILTER ---
+  function setLineFilter(line) {
+    currentLineFilter = line;
+    document.getElementById('chipAll').classList.toggle('active', line === 'الكل');
+    document.getElementById('chipLine1').classList.toggle('active', line === 'تعبئة 1');
+    document.getElementById('chipLine2').classList.toggle('active', line === 'تعبئة 2');
+    renderReports();
+  }
+
+  function getFilteredReports() {
+    const selectedDate = document.getElementById('filterDate').value || getTodayISO();
+    return reports.filter(r => {
+      const matchDate = r.date === selectedDate;
+      const matchLine = currentLineFilter === 'الكل' || (r.packingLine || 'تعبئة 1') === currentLineFilter;
+      return matchDate && matchLine;
+    });
+  }
+
+  function renderReports() {
+    const list = document.getElementById('reportsList');
+    const filtered = getFilteredReports();
+
+    let sumIn = 0, sumOut = 0, sumWaste = 0, sumDiff = 0;
+    filtered.forEach(r => {
+      sumIn += r.totalIn;
+      sumOut += r.totalOut;
+      sumWaste += (r.totalWaste || 0);
+      sumDiff += r.diff;
+    });
+
+    document.getElementById('dayTotalIn').textContent = `${sumIn.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم`;
+    document.getElementById('dayTotalOut').textContent = `${sumOut.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم`;
+    document.getElementById('dayTotalWaste').textContent = `${sumWaste.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم`;
+
+    const dayDiffEl = document.getElementById('dayTotalDiff');
+    dayDiffEl.textContent = `${sumDiff.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم`;
+    dayDiffEl.className = 'stat-value ' + (sumDiff > 0 ? 'badge-deficit' : (sumDiff < 0 ? 'badge-surplus' : ''));
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="card" style="text-align:center; color:var(--text-muted); padding:30px;">لا توجد تقارير مسجلة مطابقة للبحث</div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(r => {
+      const inLines = r.inbound.length
+        ? r.inbound.map(i => `• ${formatItemBasis(i, r.totalIn)}`).join('<br>')
+        : '• لم يُسجل';
+      const outLines = r.outbound.length
+        ? r.outbound.map(o => `• ${formatItemBasis(o)}`).join('<br>')
+        : '• لم يُسجل بعد';
+      const wasteSection = (r.waste && r.waste.length)
+        ? `<div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--border); color:var(--warning);"><strong>🗑️ الفرزة والتوالف (${r.totalWaste} كجم - ${(r.wastePercent || 0).toFixed(1)}%):</strong><br>${r.waste.map(w => `• ${formatItemBasis(w)}`).join('<br>')}</div>`
+        : '';
+
+      const diffColor = r.diff > 0 ? 'var(--danger)' : (r.diff < 0 ? 'var(--success)' : 'var(--text)');
+      const diffText = r.diff > 0
+        ? `عجز صافي: ${r.diff} كجم (${r.lossPercent.toFixed(1)}%)`
+        : (r.diff < 0 ? `فائض: ${Math.abs(r.diff)} كجم` : 'مطابق 100%');
+
+      return `
+        <div class="report-card">
+          <div class="report-header">
+            <div>
+              <div style="margin-bottom:4px;">
+                <strong style="font-size:1.05rem;">${r.productName}</strong>
+              </div>
+              <div>
+                <span class="tag tag-line">${r.packingLine || 'تعبئة 1'}</span>
+                <span class="tag ${r.orderType === 'تصدير' ? 'tag-export' : 'tag-local'}">${r.orderType}</span>
+              </div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">
+                باتش: <strong>${r.batchNumber}</strong> • العميل: ${r.clientName} • ⏰ ${r.time}
+              </div>
+            </div>
+            <div style="text-align:left;">
+              <div style="font-weight:800; color:${diffColor}; font-size:0.88rem;">${diffText}</div>
+            </div>
+          </div>
+
+          <div class="report-details">
+            <div><strong>📥 الوارد (${r.totalIn} كجم):</strong><br>${inLines}</div>
+            <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--border);"><strong>📤 الصادر السليم (${r.totalOut} كجم):</strong><br>${outLines}</div>
+            ${wasteSection}
+          </div>
+
+          <div class="report-actions">
+            <button style="background:var(--primary-light); color:var(--primary-dark);" onclick="editReport(${r.id})">✏️ تعديل / إضافة سحبة أو طبلية</button>
+            <button style="background:var(--danger-bg); color:var(--danger);" onclick="deleteReport(${r.id})">🗑️ حذف</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // --- WHATSAPP SHARE ---
+  function shareWhatsApp() {
+    const selectedDate = document.getElementById('filterDate').value || getTodayISO();
+    const dayReports = reports.filter(r => r.date === selectedDate);
+    if (dayReports.length === 0) {
+      showToast('⚠️ لا توجد تقارير في هذا اليوم لإرسالها');
+      return;
+    }
+
+    let msg = `*📋 تقرير موازين الإنتاج التفصيلي*\n`;
+    msg += `📅 التاريخ: ${selectedDate}\n`;
+    if (settings.engName) msg += `👷‍♂️ المهندس: ${settings.engName} (${settings.shiftName})\n`;
+    msg += `──────────────────\n`;
+
+    let totalInAll = 0, totalOutAll = 0, totalWasteAll = 0;
+    let line1Out = 0, line2Out = 0;
+
+    dayReports.forEach((r, idx) => {
+      totalInAll += r.totalIn;
+      totalOutAll += r.totalOut;
+      totalWasteAll += (r.totalWaste || 0);
+      if ((r.packingLine || 'تعبئة 1') === 'تعبئة 1') line1Out += r.totalOut;
+      else line2Out += r.totalOut;
+
+      msg += `*${idx + 1}. ${r.productName}* [${r.packingLine || 'تعبئة 1'} | ${r.orderType}]\n`;
+      msg += `   • الباتش: ${r.batchNumber} | العميل: ${r.clientName}\n`;
+
+      msg += `   📥 *الوارد (أساس السحب):*\n`;
+      r.inbound.forEach(i => { msg += `      - ${formatItemBasis(i, r.totalIn)}\n`; });
+      msg += `      *إجمالي الوارد:* ${r.totalIn} كجم\n`;
+
+      msg += `   📤 *الصادر السليم (أساس الطبالي):*\n`;
+      if (r.outbound.length) {
+        r.outbound.forEach(o => { msg += `      - ${formatItemBasis(o)}\n`; });
+      } else {
+        msg += `      - لم يُسجل بعد\n`;
+      }
+      msg += `      *إجمالي الصادر:* ${r.totalOut} كجم\n`;
+
+      if (r.waste && r.waste.length) {
+        msg += `   🗑️ *الفرزة والتوالف:* ${r.totalWaste} كجم (${(r.wastePercent || 0).toFixed(1)}%)\n`;
+        r.waste.forEach(w => { msg += `      - ${formatItemBasis(w)}\n`; });
+      }
+
+      msg += `   ⚖️ *العجز الصافي:* ${r.diff >= 0 ? r.diff + ' كجم' : 'فائض ' + Math.abs(r.diff) + ' كجم'} (${r.lossPercent.toFixed(1)}%)\n\n`;
+    });
+
+    msg += `──────────────────\n`;
+    msg += `*🏭 إنتاج الصالات اليوم:*\n`;
+    msg += `• تعبئة 1: ${line1Out} كجم\n`;
+    msg += `• تعبئة 2: ${line2Out} كجم\n\n`;
+    msg += `*📊 الإجمالي العام لليوم:*\n`;
+    msg += `📥 إجمالي الوارد: ${totalInAll} كجم\n`;
+    msg += `📤 إجمالي الصادر السليم: ${totalOutAll} كجم\n`;
+    if (totalWasteAll > 0) msg += `🗑️ إجمالي الفرزة: ${totalWasteAll} كجم\n`;
+    msg += `⚠️ صافي العجز: ${totalInAll - (totalOutAll + totalWasteAll)} كجم`;
+
+    const encoded = encodeURIComponent(msg);
+    const phone = settings.adminPhone ? settings.adminPhone.replace(/\D/g, '') : '';
+    const url = phone ? `https://wa.me/${phone}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+    window.open(url, '_blank');
+  }
+
+  // --- CSV EXPORT ---
+  function exportCSV() {
+    const filtered = getFilteredReports();
+    if (filtered.length === 0) {
+      showToast('⚠️ لا توجد بيانات لتصديرها');
+      return;
+    }
+
+    const headers = ['التاريخ', 'الوقت', 'المهندس', 'صالة التعبئة', 'المنتج', 'رقم الباتش', 'نوع الطلبية', 'العميل', 'أساس الوارد', 'إجمالي الوارد (كجم)', 'أساس الصادر', 'إجمالي الصادر (كجم)', 'تفاصيل الفرزة', 'إجمالي الفرزة (كجم)', 'العجز الصافي (كجم)', 'نسبة العجز الصافي (%)'];
+    const rows = filtered.map(r => [
+      r.date,
+      r.time,
+      r.engineer,
+      r.packingLine || 'تعبئة 1',
+      r.productName,
+      r.batchNumber,
+      r.orderType,
+      r.clientName,
+      r.inbound.map(i => formatItemBasis(i, r.totalIn)).join(' | '),
+      r.totalIn,
+      r.outbound.map(o => formatItemBasis(o)).join(' | '),
+      r.totalOut,
+      (r.waste || []).map(w => formatItemBasis(w)).join(' | '),
+      r.totalWaste || 0,
+      r.diff,
+      r.lossPercent.toFixed(2)
+    ]);
+
+    let csvContent = '\uFEFF' + [headers, ...rows].map(e => e.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `تقرير_المصنع_${document.getElementById('filterDate').value || getTodayISO()}.csv`;
+    link.click();
+    showToast('📥 تم تحميل ملف الإكسيل بنجاح');
+  }
+
+  function clearDayReports() {
+    const selectedDate = document.getElementById('filterDate').value || getTodayISO();
+    const count = reports.filter(r => r.date === selectedDate).length;
+    if (count === 0) return;
+    if (!confirm(`هل تريد مسح جميع تقارير يوم ${selectedDate} (${count} تقارير)؟`)) return;
+
+    reports = reports.filter(r => r.date !== selectedDate);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+    renderReports();
+    updateCountBadge();
+    showToast('🗑️ تم مسح تقارير اليوم');
+  }
+
+  // --- SETTINGS & BACKUP ---
+  function openSettings() {
+    document.getElementById('engName').value = settings.engName || '';
+    document.getElementById('shiftName').value = settings.shiftName || 'الوردية الصباحية';
+    document.getElementById('adminPhone').value = settings.adminPhone || '';
+    document.getElementById('settingsModal').classList.add('open');
+  }
+
+  function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('open');
+  }
+
+  function saveSettings() {
+    settings = {
+      engName: document.getElementById('engName').value.trim(),
+      shiftName: document.getElementById('shiftName').value,
+      adminPhone: document.getElementById('adminPhone').value.trim()
+    };
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    updateHeaderSubtitle();
+    closeSettings();
+    showToast('✅ تم حفظ بيانات المهندس');
+  }
+
+  function updateHeaderSubtitle() {
+    const sub = document.getElementById('headerSubtitle');
+    sub.textContent = settings.engName
+      ? `${settings.engName} • ${settings.shiftName}`
+      : 'اضغط لتسجيل اسم المهندس والوردية';
+  }
+
+  function downloadBackup() {
+    const backup = { reports, settings, exportedAt: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `نسخة_احتياطية_المصنع_${getTodayISO()}.json`;
+    link.click();
+    showToast('🛡️ تم حفظ النسخة الاحتياطية');
+  }
+
+  function restoreBackup(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (Array.isArray(data.reports)) {
+          reports = data.reports;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+        }
+        if (data.settings) {
+          settings = data.settings;
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+          updateHeaderSubtitle();
+        }
+        renderReports();
+        updateCountBadge();
+        updateDatalists();
+        closeSettings();
+        showToast('✅ تم استرجاع البيانات بنجاح');
+      } catch (err) {
+        showToast('❌ ملف النسخة الاحتياطية غير صالح');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function updateCountBadge() {
+    const todayCount = reports.filter(r => r.date === getTodayISO()).length;
+    document.getElementById('reportsCount').textContent = todayCount;
+  }
+
+  function updateDatalists() {
+    const uniqueProducts = [...new Set(reports.map(r => r.productName))];
+    const pList = document.getElementById('productsList');
+    uniqueProducts.forEach(p => {
+      if (![...pList.options].some(opt => opt.value === p)) {
+        const opt = document.createElement('option');
+        opt.value = p;
+        pList.appendChild(opt);
+      }
+    });
+
+    const uniqueClients = [...new Set(reports.map(r => r.clientName).filter(c => c && c !== 'غير محدد'))];
+    const cList = document.getElementById('clientsList');
+    cList.innerHTML = uniqueClients.map(c => `<option value="${c}">`).join('');
+  }
+
+  // --- OFFLINE SERVICE WORKER REGISTRATION (INLINE BLOB) ---
+  if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+    const swCode = `
+      const CACHE_NAME = 'factory-weights-cache-v1';
+      self.addEventListener('install', e => {
+        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll([self.location.href])));
+      });
+      self.addEventListener('fetch', e => {
+        e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+      });
+    `;
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+  }
+
+  // --- INIT ---
+  applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+  document.getElementById('filterDate').value = getTodayISO();
+  updateHeaderSubtitle();
+  updateCountBadge();
+  updateDatalists();
+  loadDraft();
+
+  // لو المهندس لسه مسجلش اسمه أول مرة، نفتحله نافذة التعريف تلقائيًا
+  if (!settings.engName) {
+    setTimeout(openSettings, 400);
+  }
+</script>
+</body>
+</html>
