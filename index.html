@@ -69,7 +69,7 @@
       transition: background-color 0.25s, color 0.25s;
     }
 
-    /* Header matching screenshot style */
+    /* Header */
     header {
       background: linear-gradient(90deg, #059669 0%, #047857 100%);
       color: white;
@@ -175,7 +175,7 @@
       white-space: nowrap;
     }
 
-    /* Main Responsive Layout (2 columns on desktop like screenshot, 1 column on mobile) */
+    /* Main Responsive Layout */
     .container {
       max-width: 1120px;
       margin: 0 auto;
@@ -192,7 +192,7 @@
 
     .workspace-grid {
       display: grid;
-      grid-template-columns: 1fr 330px;
+      grid-template-columns: 1fr 340px;
       gap: 18px;
       align-items: start;
     }
@@ -308,6 +308,25 @@
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
     }
 
+    /* Target Order Box inside Batch Card */
+    .target-sub-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--card-sub);
+      border: 1px dashed rgba(56, 189, 248, 0.35);
+      border-radius: 12px;
+    }
+
+    .target-sub-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
     /* Toggle Pills */
     .radio-group {
       display: flex;
@@ -334,7 +353,7 @@
       color: var(--primary-dark);
     }
 
-    /* Weight Rows (Matching screenshot nested dark cards) */
+    /* Weight Rows */
     .weight-row {
       background: var(--card-sub);
       padding: 14px;
@@ -495,7 +514,7 @@
       gap: 8px;
     }
 
-    /* Sticky Live Summary Sidebar Card (Matching left panel in screenshot) */
+    /* Sticky Live Summary Sidebar Card */
     .summary-card {
       position: sticky;
       top: 78px;
@@ -567,6 +586,70 @@
       color: var(--text);
     }
 
+    /* Order Target Live Tracker Panel inside Summary */
+    .target-tracker-box {
+      display: none;
+      margin-top: 14px;
+      padding: 13px;
+      background: var(--card-sub);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 12px;
+    }
+
+    .tracker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-bottom: 8px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 7px;
+      background: var(--input-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #059669, #38bdf8);
+      border-radius: 10px;
+      transition: width 0.25s ease;
+    }
+
+    .tracker-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      padding: 5px 0;
+      border-top: 1px dashed var(--border);
+    }
+
+    .tracker-row:first-of-type {
+      border-top: none;
+    }
+
+    .tracker-val {
+      font-weight: 800;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .tracker-sub-note {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
     /* Action Buttons */
     .btn {
       width: 100%;
@@ -609,7 +692,7 @@
       color: var(--danger);
     }
 
-    /* Floating Bottom Navigation Pill (Matching screenshot bottom bar) */
+    /* Floating Bottom Navigation Pill */
     .bottom-nav {
       position: fixed;
       bottom: 16px;
@@ -898,6 +981,24 @@
               <input type="hidden" id="orderType" value="تصدير" />
             </div>
           </div>
+
+          <!-- OPTIONAL TARGET ORDER CALCULATOR INPUTS -->
+          <div class="target-sub-box">
+            <div class="target-sub-title">
+              <span>حاسبة تقفيل الأوردر وسحب الثلاجة (اختياري)</span>
+              <span style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">اتركه فارغاً للوط المفتوح</span>
+            </div>
+            <div class="grid-2" style="margin-bottom:0;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label style="font-size:0.76rem;">عدد عبوات الأوردر المطلوب</label>
+                <input type="text" inputmode="decimal" id="targetCountExpr" placeholder="مثال: 500 أو 100+100+100" oninput="calculateLive(); handleDraftChange();" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label style="font-size:0.76rem;">وزن عبوة الأوردر (كجم)</label>
+                <input type="number" step="any" min="0" id="targetUnitWeight" placeholder="مثال: 8" oninput="calculateLive(); handleDraftChange();" />
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 2. INBOUND SECTION -->
@@ -1043,6 +1144,29 @@
         <div class="pct-pills-row">
           <div class="pct-pill" id="lossPctPill">نسبة العجز 0%</div>
           <div class="pct-pill" id="wastePctPill">نسبة الفرزة 0%</div>
+        </div>
+
+        <!-- LIVE ORDER TARGET & FRIDGE PULL TRACKER -->
+        <div class="target-tracker-box" id="targetTrackerBox">
+          <div class="tracker-header">
+            <span>متابعة تقفيل الأوردر</span>
+            <span id="targetProgressPct">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="targetProgressBar"></div>
+          </div>
+          <div class="tracker-row">
+            <span style="color:var(--text-muted);">المطلوب الكلي:</span>
+            <div class="tracker-val" id="targetTotalDisplay">0 كجم</div>
+          </div>
+          <div class="tracker-row">
+            <span style="color:var(--text-muted);">الباقي للتقفيل:</span>
+            <div class="tracker-val" id="targetRemainingDisplay">0 كجم</div>
+          </div>
+          <div class="tracker-row">
+            <span style="color:var(--text-muted);">اسحب من الثلاجة:</span>
+            <div class="tracker-val" id="fridgeNeededDisplay">0 كجم</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1423,7 +1547,7 @@
     return `${item.count} ${item.pkg}${ingNote}${batchesNote} × ${item.unitWeight} كجم = ${item.subtotal} كجم${pctNote}`;
   }
 
-  // --- LIVE CALCULATION ---
+  // --- LIVE CALCULATION & ORDER TARGET TRACKER ---
   function calculateLive() {
     const inData = getRowsData('inbound');
     const outData = getRowsData('outbound');
@@ -1459,6 +1583,57 @@
     const wastePct = inData.total > 0 ? ((wasteData.total / inData.total) * 100) : 0;
     document.getElementById('lossPctPill').textContent = `نسبة العجز ${netLossPct.toFixed(1)}%`;
     document.getElementById('wastePctPill').textContent = `نسبة الفرزة ${wastePct.toFixed(1)}%`;
+
+    // Target Order & Fridge Pull Calculation
+    const targetCountParsed = parseCountExpression(document.getElementById('targetCountExpr').value);
+    const targetUnitWt = parseFloat(document.getElementById('targetUnitWeight').value) || 0;
+    const trackerBox = document.getElementById('targetTrackerBox');
+
+    if (targetCountParsed.sum > 0 && targetUnitWt > 0) {
+      trackerBox.style.display = 'block';
+      const targetTotalKg = targetCountParsed.sum * targetUnitWt;
+      const pctDone = Math.min(100, (outData.total / targetTotalKg) * 100);
+
+      document.getElementById('targetProgressPct').textContent = `${pctDone.toFixed(1)}%`;
+      document.getElementById('targetProgressBar').style.width = `${pctDone}%`;
+      document.getElementById('targetTotalDisplay').innerHTML =
+        `${targetTotalKg.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم` +
+        `<span class="tracker-sub-note">${targetCountParsed.sum} عبوة × ${targetUnitWt} كجم</span>`;
+
+      const remainingKg = Math.max(0, targetTotalKg - outData.total);
+      const remainingCartons = Math.ceil(remainingKg / targetUnitWt);
+
+      if (remainingKg === 0) {
+        document.getElementById('targetRemainingDisplay').innerHTML = `<span style="color:var(--success);">تم اكتمال الأوردر بالكامل ✓</span>`;
+        document.getElementById('fridgeNeededDisplay').innerHTML = `<span style="color:var(--success);">أوقف السحب من الثلاجة</span>`;
+      } else {
+        document.getElementById('targetRemainingDisplay').innerHTML =
+          `${remainingKg.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم` +
+          `<span class="tracker-sub-note">باقي ≈ ${remainingCartons} عبوة</span>`;
+
+        // Yield ratio from current batch if inbound & outbound exist
+        let yieldRatio = 1;
+        if (inData.total > 0 && outData.total > 0 && outData.total <= inData.total) {
+          yieldRatio = outData.total / inData.total;
+        }
+        const rawNeededKg = remainingKg / (yieldRatio > 0.3 ? yieldRatio : 1);
+
+        // Detect inbound package unit weight & name from first inbound row
+        const validInItems = inData.items.filter(i => i.unitWeight > 0);
+        let fridgePkgNote = '';
+        if (validInItems.length > 0) {
+          const inUnitWt = validInItems[0].unitWeight;
+          const inPkgName = validInItems[0].pkg;
+          const neededInUnits = Math.ceil(rawNeededKg / inUnitWt);
+          fridgePkgNote = `<span class="tracker-sub-note">≈ ${neededInUnits} ${inPkgName} (وزن ${inUnitWt} كجم)</span>`;
+        }
+
+        document.getElementById('fridgeNeededDisplay').innerHTML =
+          `${rawNeededKg.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم` + fridgePkgNote;
+      }
+    } else {
+      trackerBox.style.display = 'none';
+    }
   }
 
   // --- AUTO-SAVE DRAFT ---
@@ -1473,6 +1648,8 @@
         packingLine: document.getElementById('packingLine').value,
         orderType: document.getElementById('orderType').value,
         clientName: document.getElementById('clientName').value,
+        targetCountExpr: document.getElementById('targetCountExpr').value,
+        targetUnitWeight: document.getElementById('targetUnitWeight').value,
         inbound: getRowsData('inbound').items,
         outbound: getRowsData('outbound').items,
         wasteOpen: document.getElementById('wasteCard').style.display !== 'none',
@@ -1497,6 +1674,8 @@
       document.getElementById('productName').value = d.productName || '';
       document.getElementById('batchNumber').value = d.batchNumber || '';
       document.getElementById('clientName').value = d.clientName || '';
+      document.getElementById('targetCountExpr').value = d.targetCountExpr || '';
+      document.getElementById('targetUnitWeight').value = d.targetUnitWeight || '';
       setPackingLine(d.packingLine || 'تعبئة 1');
       setOrderType(d.orderType || 'تصدير');
 
@@ -1525,6 +1704,8 @@
     const packingLine = document.getElementById('packingLine').value;
     const orderType = document.getElementById('orderType').value;
     const clientName = document.getElementById('clientName').value.trim();
+    const targetCountExpr = document.getElementById('targetCountExpr').value.trim();
+    const targetUnitWeight = document.getElementById('targetUnitWeight').value.trim();
     const editingId = document.getElementById('editingId').value;
 
     if (!productName) {
@@ -1556,6 +1737,8 @@
       packingLine,
       orderType,
       clientName: clientName || 'غير محدد',
+      targetCountExpr,
+      targetUnitWeight,
       inbound: inData.items,
       outbound: outData.items,
       waste: wasteData.items,
@@ -1598,6 +1781,8 @@
     document.getElementById('productName').value = '';
     document.getElementById('batchNumber').value = '';
     document.getElementById('clientName').value = '';
+    document.getElementById('targetCountExpr').value = '';
+    document.getElementById('targetUnitWeight').value = '';
     setPackingLine('تعبئة 1');
     setOrderType('تصدير');
 
@@ -1621,6 +1806,8 @@
     document.getElementById('productName').value = r.productName;
     document.getElementById('batchNumber').value = r.batchNumber === 'بدون باتش' ? '' : r.batchNumber;
     document.getElementById('clientName').value = r.clientName === 'غير محدد' ? '' : r.clientName;
+    document.getElementById('targetCountExpr').value = r.targetCountExpr || '';
+    document.getElementById('targetUnitWeight').value = r.targetUnitWeight || '';
     setPackingLine(r.packingLine || 'تعبئة 1');
     setOrderType(r.orderType);
 
