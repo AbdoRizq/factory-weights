@@ -1,21 +1,27 @@
 {
-  "name": "موازين الإنتاج - إدارة المصنع",
-  "short_name": "موازين الإنتاج",
-  "start_url": "./index.html",
-  "scope": "./",
+  "name": "تقارير التعبئة",
+  "short_name": "تقارير التعبئة",
+  "description": "نظام تسجيل ومتابعة أوزان وتقارير خطوط التعبئة والإنتاج",
+  "start_url": "/factory-weights/index.html",
+  "scope": "/factory-weights/",
   "display": "standalone",
-  "background_color": "#0f766e",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
   "theme_color": "#0f766e",
+  "dir": "rtl",
+  "lang": "ar",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/192/2921/2921822.png",
+      "src": "/factory-weights/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2921/2921822.png",
+      "src": "/factory-weights/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
