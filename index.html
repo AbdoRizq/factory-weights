@@ -1618,18 +1618,33 @@
         }
         const rawNeededKg = remainingKg / (yieldRatio > 0.3 ? yieldRatio : 1);
 
-        // Detect inbound package unit weight & name from first inbound row
-        const validInItems = inData.items.filter(i => i.unitWeight > 0);
-        let fridgePkgNote = '';
-        if (validInItems.length > 0) {
-          const inUnitWt = validInItems[0].unitWeight;
-          const inPkgName = validInItems[0].pkg;
-          const neededInUnits = Math.ceil(rawNeededKg / inUnitWt);
-          fridgePkgNote = `<span class="tracker-sub-note">≈ ${neededInUnits} ${inPkgName} (وزن ${inUnitWt} كجم)</span>`;
-        }
+        // توزيع السحب المطلوب: لو صنف واحد أو خلطة بأكثر من مكون
+        const validInItems = inData.items.filter(i => i.subtotal > 0);
+        if (validInItems.length > 1 && inData.total > 0) {
+          // حالة الخلطة (أكثر من سطر وارد): توزيع الباقي حسب نسبة كل مكون مسحوب
+          const mixLines = validInItems.map((item, idx) => {
+            const shareRatio = item.subtotal / inData.total;
+            const neededKg = rawNeededKg * shareRatio;
+            const label = item.ingredient || `مكوّن ${idx + 1}`;
+            const unitsNote = item.unitWeight > 0
+              ? ` (≈ ${Math.ceil(neededKg / item.unitWeight)} ${item.pkg})`
+              : '';
+            return `<span class="tracker-sub-note">• ${label}: ${neededKg.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم${unitsNote}</span>`;
+          }).join('');
 
-        document.getElementById('fridgeNeededDisplay').innerHTML =
-          `${rawNeededKg.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم` + fridgePkgNote;
+          document.getElementById('fridgeNeededDisplay').innerHTML =
+            `${rawNeededKg.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم إجمالي` + mixLines;
+        } else {
+          // حالة الصنف الواحد (سطر وارد واحد)
+          let fridgePkgNote = '';
+          const firstValid = inData.items.find(i => i.unitWeight > 0);
+          if (firstValid) {
+            const neededInUnits = Math.ceil(rawNeededKg / firstValid.unitWeight);
+            fridgePkgNote = `<span class="tracker-sub-note">≈ ${neededInUnits} ${firstValid.pkg} (وزن ${firstValid.unitWeight} كجم)</span>`;
+          }
+          document.getElementById('fridgeNeededDisplay').innerHTML =
+            `${rawNeededKg.toLocaleString('en-US', {maximumFractionDigits: 1})} كجم` + fridgePkgNote;
+        }
       }
     } else {
       trackerBox.style.display = 'none';
